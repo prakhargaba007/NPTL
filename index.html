@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Questions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 35px;
+            font-size: 2.8em;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .range-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .range-controls input {
+            padding: 12px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            width: 90px;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .range-controls input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .range-controls label {
+            font-weight: 700;
+            color: #333;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #range-info {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 600;
+            padding: 8px 16px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 20px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            font-size: 16px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-shuffle {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-shuffle:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-shuffle:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .question-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .question-id {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 19px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .options {
+            margin: 20px 0;
+        }
+
+        .option-item {
+            background: #f8f9fa;
+            padding: 16px 24px;
+            margin: 12px 0;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            font-size: 16px;
+            color: #495057;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .option-item:hover::after {
+            left: 100%;
+        }
+
+        .option-item.clickable {
+            cursor: pointer;
+        }
+
+        .option-item.clickable:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+        }
+
+        .option-item.selected {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            font-weight: 600;
+            animation: pulse 0.4s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .option-item.correct {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-color: #4caf50;
+            border-width: 3px;
+            animation: correctAnswer 0.5s ease;
+        }
+
+        @keyframes correctAnswer {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .option-item.wrong {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-color: #f44336;
+            border-width: 3px;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .option-item::before {
+            content: "○";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .option-item.correct::before {
+            content: "✓";
+            color: #4caf50;
+        }
+
+        .option-item.wrong::before {
+            content: "✗";
+            color: #f44336;
+        }
+
+        .answer-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 12px;
+            border-left: 5px solid #4caf50;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .answer-label {
+            font-weight: 800;
+            color: #2e7d32;
+            font-size: 13px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .answer-text {
+            font-size: 17px;
+            color: #1b5e20;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .answer-text::before {
+            content: "✓";
+            color: #4caf50;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        /* Loading animation */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+                border-radius: 15px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+
+            .question-text {
+                font-size: 17px;
+            }
+
+            .btn {
+                padding: 12px 24px;
+                font-size: 15px;
+            }
+
+            .range-controls {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Quiz Master</h1>
+        
+        <div class="range-controls">
+            <label for="range-start">Start:</label>
+            <input type="number" id="range-start" min="1" value="1" onchange="applyRange()">
+            <label for="range-end">End:</label>
+            <input type="number" id="range-end" min="1" value="" onchange="applyRange()">
+            <span id="range-info"></span>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-start" onclick="startQuiz()"><span>▶️ Start Quiz</span></button>
+            <button class="btn btn-shuffle" onclick="shuffleQuestions()"><span>🔀 Shuffle</span></button>
+            <button class="btn btn-reset" onclick="resetQuestions()"><span>↩️ Reset</span></button>
+        </div>
+
+        <div id="questions-container"></div>
+    </div>
+
+    <script type="module">
+        import questions from './index.js';
+
+        // Store original order
+        const originalQuestions = [...questions];
+        let currentQuestions = [...questions];
+        let isQuizMode = false;
+        const totalQuestions = questions.length;
+
+        // Set max value for range inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const rangeEnd = document.getElementById('range-end');
+            rangeEnd.max = totalQuestions;
+            rangeEnd.value = totalQuestions;
+            updateRangeInfo();
+        });
+
+        function updateRangeInfo() {
+            const start = parseInt(document.getElementById('range-start').value) || 1;
+            const end = parseInt(document.getElementById('range-end').value) || totalQuestions;
+            const count = Math.max(0, end - start + 1);
+            document.getElementById('range-info').textContent = `${count} question${count !== 1 ? 's' : ''}`;
+        }
+
+        function applyRange() {
+            const start = parseInt(document.getElementById('range-start').value) || 1;
+            const end = parseInt(document.getElementById('range-end').value) || totalQuestions;
+            
+            // Validate range
+            if (start < 1) {
+                document.getElementById('range-start').value = 1;
+                return;
+            }
+            if (end > totalQuestions) {
+                document.getElementById('range-end').value = totalQuestions;
+                return;
+            }
+            if (start > end) {
+                document.getElementById('range-end').value = start;
+                return;
+            }
+            
+            updateRangeInfo();
+            
+            // Apply current display mode
+            if (isQuizMode) {
+                startQuiz();
+            } else {
+                resetQuestions();
+            }
+        }
+
+        function getFilteredQuestions() {
+            const start = parseInt(document.getElementById('range-start').value) || 1;
+            const end = parseInt(document.getElementById('range-end').value) || totalQuestions;
+            return originalQuestions.slice(start - 1, end);
+        }
+
+        // Helper function to shuffle an array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function displayQuestions(questionsArray, showAnswers = true, isQuizMode = false) {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            questionsArray.forEach((q, index) => {
+                setTimeout(() => {
+                    const card = document.createElement('div');
+                    card.className = 'question-card';
+                    card.setAttribute('data-question-id', q.id);
+
+                    // Shuffle options if in quiz mode
+                    const optionsToDisplay = (!showAnswers && isQuizMode) ? shuffleArray(q.options) : q.options;
+
+                    const optionsHtml = optionsToDisplay.map((opt, idx) => 
+                        `<div class="option-item ${!showAnswers ? 'clickable' : ''}" 
+                              ${!showAnswers ? `onclick="selectOption('${q.id}', ${idx}, '${q.answer}')"` : ''}>
+                            ${opt}
+                        </div>`
+                    ).join('');
+
+                    const answerHtml = showAnswers ? `
+                        <div class="answer-section">
+                            <div class="answer-label">Correct Answer</div>
+                            <div class="answer-text">${q.answer}</div>
+                        </div>
+                    ` : '';
+
+                    const questionIdHtml = isQuizMode ? '' : `<span class="question-id">${q.id}</span>`;
+
+                    card.innerHTML = `
+                        ${questionIdHtml}
+                        <div class="question-text">${q.question}</div>
+                        <div class="options">
+                            ${optionsHtml}
+                        </div>
+                        ${answerHtml}
+                    `;
+
+                    container.appendChild(card);
+                }, index * 50);
+            });
+        }
+
+        function startQuiz() {
+            isQuizMode = true;
+            shuffleQuestions();
+        }
+
+        function selectOption(questionId, optionIndex, correctAnswer) {
+            const container = document.getElementById('questions-container');
+            const questionElement = container.querySelector(`[data-question-id="${questionId}"]`);
+            
+            if (!questionElement) return;
+
+            const options = questionElement.querySelectorAll('.option-item');
+            const selectedOption = options[optionIndex];
+            const selectedText = selectedOption.textContent.trim();
+
+            // Remove clickable class from all options
+            options.forEach(opt => {
+                opt.classList.remove('clickable', 'selected', 'correct', 'wrong');
+                opt.onclick = null;
+            });
+
+            selectedOption.classList.add('selected');
+            
+            if (selectedText === correctAnswer) {
+                selectedOption.classList.add('correct');
+            } else {
+                selectedOption.classList.add('wrong');
+                // Show the correct answer
+                options.forEach(opt => {
+                    if (opt.textContent.trim() === correctAnswer) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+        }
+
+        function shuffleQuestions() {
+            const filteredQuestions = getFilteredQuestions();
+            currentQuestions = [...filteredQuestions];
+            // Fisher-Yates shuffle algorithm
+            for (let i = currentQuestions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [currentQuestions[i], currentQuestions[j]] = [currentQuestions[j], currentQuestions[i]];
+            }
+            displayQuestions(currentQuestions, !isQuizMode, isQuizMode);
+        }
+
+        function resetQuestions() {
+            isQuizMode = false;
+            currentQuestions = [...getFilteredQuestions()];
+            displayQuestions(currentQuestions, true, false);
+        }
+
+        // Export functions to window scope for onclick handlers
+        window.startQuiz = startQuiz;
+        window.shuffleQuestions = shuffleQuestions;
+        window.resetQuestions = resetQuestions;
+        window.applyRange = applyRange;
+        window.selectOption = selectOption;
+
+        // Display questions on page load with answers
+        displayQuestions(currentQuestions, true, false);
+    </script>
+</body>
+</html>
