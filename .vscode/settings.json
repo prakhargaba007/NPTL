@@ -1,0 +1,9 @@
+{
+    "code-runner.executorMap": {
+        "python": "python3 -u"
+    },
+    "code-runner.runInTerminal": false,
+    "code-runner.clearPreviousOutput": true,
+    "code-runner.saveFileBeforeRun": true
+}
+
